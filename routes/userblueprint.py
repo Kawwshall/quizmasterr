@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from werkzeug.security import check_password_hash
-from ..models import db, User, Subject, Quiz, Score
+from werkzeug.security import check_password_hash  # Reintroduced werkzeug.security
+from models import db, User, Subject, Quiz, Score
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 
-@user_bp.route("/login", methods=["GET", "POST"])
+@user_bp.route("/userlogin", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -15,15 +15,15 @@ def login():
             return redirect(url_for("user.user_dashboard"))
         else:
             flash("Invalid credentials", "danger")
-    return render_template("user/login.html")
+    return render_template("login.html")
 
-@user_bp.route("/logout")
+@user_bp.route("/userlogout")
 def logout():
     session.pop("user", None)
     flash("Logged out successfully", "success")
     return redirect(url_for("user.login"))
 
-@user_bp.route("/dashboard")
+@user_bp.route("/userdashboard")
 def user_dashboard():
     if "user" not in session:
         return redirect(url_for("user.login"))
@@ -39,7 +39,7 @@ def view_scores():
     scores = Score.query.filter_by(user_id=user.id).all()
     return render_template("user/scores.html", scores=scores)
 
-@user_bp.route("/summary")
+@user_bp.route("/usersummary")
 def summary_charts():
     if "user" not in session:
         return redirect(url_for("user.login"))

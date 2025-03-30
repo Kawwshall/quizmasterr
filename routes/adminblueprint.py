@@ -1,29 +1,28 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from werkzeug.security import check_password_hash
-from ..models import db, User, Subject, Chapter, Quiz, Question
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash  # Reintroduced werkzeug.security
+from models import db, User, Subject, Chapter, Quiz, Question  # Changed to absolute import
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-@admin_bp.route("/login", methods=["GET", "POST"])
-def admin_login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        admin = User.query.filter_by(username=username, role="admin").first()
-        if admin and admin.check_password(password):
-            session["admin"] = admin.username
-            return redirect(url_for("admin.admin_dashboard"))
-        else:
-            flash("Invalid credentials", "danger")
-    return render_template("admin/login.html")
+@admin_bp.route("/adminlogin", methods=["GET", "POST"])
+# def admin_login():
+#     if request.method == "POST":
+#         username = request.form.get("username")
+#         password = request.form.get("password")
+#         admin = User.query.filter_by(username=username, role="admin").first()
+#         if admin and admin.check_password(password):
+#             session["admin"] = admin.username
+#             return redirect(url_for("admin.admin_dashboard"))
+#         else:
+#             flash("Invalid credentials", "danger")
+#     return render_template("admin/login.html")
 
-@admin_bp.route("/logout")
+@admin_bp.route("/adminlogout")
 def admin_logout():
     session.pop("admin", None)
     flash("Logged out successfully", "success")
     return redirect(url_for("admin.admin_login"))
 
-@admin_bp.route("/dashboard")
+@admin_bp.route("/admindashboard")
 def admin_dashboard():
     if "admin" not in session:
         return redirect(url_for("admin.admin_login"))
@@ -53,7 +52,7 @@ def delete_subject(subject_id):
     flash("Subject deleted successfully", "success")
     return redirect(url_for("admin.admin_dashboard"))
 
-@admin_bp.route("/search", methods=["GET"])
+@admin_bp.route("/a_search", methods=["GET"])
 def search():
     if "admin" not in session:
         return redirect(url_for("admin.admin_login"))
